@@ -22,36 +22,11 @@ public class PetTesting {
     @BeforeClass
     public static void setUp() {
         RestAssured.baseURI = BASE_URL;
-
-        class JsonReader {
-            public static String readJsonFromResource(String resourcePath) {
-                StringBuilder content = new StringBuilder();
-
-                try (InputStream inputStream = JsonReader.class.getClassLoader()
-                        .getResourceAsStream(resourcePath);
-                     BufferedReader reader = new BufferedReader(
-                             new InputStreamReader(inputStream))) {
-
-                    if (inputStream == null) {
-                        throw new IllegalArgumentException("Файл не найден в ресурсах: " + resourcePath);
-                    }
-
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        content.append(line).append("\n");
-                    }
-
-                } catch (IOException e) {
-                    throw new RuntimeException("Ошибка при чтении файла: " + resourcePath, e);
-                }
-
-                return content.toString();
-            }
-        }
-
-
-
     }
+
+
+
+
     @Test
     public void testCreateUpdateAndDeletePet() {
         // Шаг 1: Создать питомца
