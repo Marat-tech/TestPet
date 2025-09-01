@@ -1,0 +1,18 @@
+{
+  "id": 18,
+  "category": {
+    "id": 18,
+    "name": "dog"
+  },
+  "name": "Vasya",
+  "photoUrls": [
+    "https://ornella.club/uploads/posts/2023-02/5288/1675872634_ornella-club-p-smeshnie-mordi-sobak-zhivotnie-vkontakte-2.jpg"
+  ],
+  "tags": [
+    {
+      "id": 18,
+      "name": "balbes"
+    }
+  ],
+  "status": "ne durnoy"
+}

@@ -4,6 +4,11 @@ import io.restassured.response.Response;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -11,11 +16,38 @@ public class PetTesting {
     private static final String BASE_URL = "https://petstore.swagger.io/v2";
 
     private static final int PET_ID = 18;
+
     // Уникальный ID для теста
 
     @BeforeClass
     public static void setUp() {
         RestAssured.baseURI = BASE_URL;
+
+        class JsonReader {
+            public static String readJsonFromResource(String resourcePath) {
+                StringBuilder content = new StringBuilder();
+
+                try (InputStream inputStream = JsonReader.class.getClassLoader()
+                        .getResourceAsStream(resourcePath);
+                     BufferedReader reader = new BufferedReader(
+                             new InputStreamReader(inputStream))) {
+
+                    if (inputStream == null) {
+                        throw new IllegalArgumentException("Файл не найден в ресурсах: " + resourcePath);
+                    }
+
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        content.append(line).append("\n");
+                    }
+
+                } catch (IOException e) {
+                    throw new RuntimeException("Ошибка при чтении файла: " + resourcePath, e);
+                }
+
+                return content.toString();
+            }
+        }
 
 
 
@@ -23,27 +55,7 @@ public class PetTesting {
     @Test
     public void testCreateUpdateAndDeletePet() {
         // Шаг 1: Создать питомца
-        String createPetBody = """
-              {
-                  "id": 18,
-                  "category": {
-                    "id": 18,
-                    "name": "dog"
-                  },
-                  "name": "Sam",
-                  "photoUrls": [
-                    "https://ornella.club/uploads/posts/2023-02/5288/1675872634_ornella-club-p-smeshnie-mordi-sobak-zhivotnie-vkontakte-2.jpg"
-                  ],
-                  "tags": [
-                    {
-                      "id": 18,
-                      "name": "balbes"
-                    }
-                  ],
-                  "status": "durnoy"
-                } 
-            """.formatted(PET_ID);
-
+        String createPetBody = JsonReader.readJsonFromResource("data.json");
 
         Response response = given()
                 .contentType(ContentType.JSON)
@@ -61,7 +73,7 @@ public class PetTesting {
 
         try {
             System.out.println("Ожидание три секунды перед отправкой запроса");
-            Thread.sleep(3000);
+            Thread.sleep(7000);
         }
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -78,7 +90,7 @@ public class PetTesting {
                 .body("name", equalTo("Sam"));
         try {
             System.out.println("Ожидание пять секунд перед отправкой запроса");
-            Thread.sleep(5000);
+            Thread.sleep(7000);
         }
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -86,26 +98,7 @@ public class PetTesting {
             return;
         }
 
-        String updatePetBody = """
-            {
-               "id": 18,
-                  "category": {
-                    "id": 18,
-                    "name": "dog"
-                  },
-                  "name": "Vasya",
-                  "photoUrls": [
-                    "https://ornella.club/uploads/posts/2023-02/5288/1675872634_ornella-club-p-smeshnie-mordi-sobak-zhivotnie-vkontakte-2.jpg"
-                  ],
-                  "tags": [
-                    {
-                      "id": 18,
-                      "name": "balbes"
-                    }
-                  ],
-                  "status": "ne durnoy"
-            }
-            """.formatted(PET_ID);
+        String updatePetBody = JsonReader.readJsonFromResource("data1.json");
 
         Response response1 = given()
                 .contentType(ContentType.JSON)
@@ -141,7 +134,7 @@ public class PetTesting {
                 .body("status", equalTo("ne durnoy"));
         try {
             System.out.println("Ожидание четыре секунды перед отправкой запроса");
-            Thread.sleep(4000);
+            Thread.sleep(5000);
         }
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -179,7 +172,7 @@ public class PetTesting {
                 .body("message", equalTo("Pet not found"));
         try {
             System.out.println("Ожидание три секунды перед отправкой запроса");
-            Thread.sleep(4000);
+            Thread.sleep(7000);
         }
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
